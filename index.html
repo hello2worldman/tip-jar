@@ -1,0 +1,1392 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>打赏与赞助</title>
+<meta name="description" content="如果这些内容对你有用，可以请我喝一杯咖啡。支持 BTC / EVM / Solana / Tron 打赏。" />
+<style>
+  html,body{margin:0;padding:0}
+  body{min-height:100vh;background:#f7f6f2;padding:48px 16px;box-sizing:border-box}
+  @media (prefers-color-scheme: dark){ body{background:#1a1b18} }
+</style>
+</head>
+<body><style>
+  .donation-block {
+    --db-ink: #23211c;
+    --db-muted: #7d776c;
+    --db-line: #e8e4db;
+    --db-line-strong: #d9d3c7;
+    --db-surface: #ffffff;
+    --db-field: #f7f6f2;
+    --db-hover: rgba(35, 33, 28, 0.035);
+    --db-accent: #766449;
+    --db-accent-soft: #f3eee4;
+    --db-accent-line: #ddd0b8;
+    --db-accent-ink: #64533a;
+    --db-success: #3f6a4f;
+    --db-danger: #8a4b41;
+    --db-shadow: 0 1px 2px rgba(35, 33, 28, 0.04), 0 18px 40px -34px rgba(35, 33, 28, 0.3);
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 620px;
+    margin: 0 auto;
+    color: var(--db-ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+      "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    -webkit-font-smoothing: antialiased;
+    text-align: left;
+  }
+
+  .donation-block *,
+  .donation-block *::before,
+  .donation-block *::after {
+    box-sizing: border-box;
+  }
+
+  .donation-block__head {
+    max-width: 560px;
+    margin-bottom: 24px;
+  }
+
+  .donation-block__kicker {
+    margin: 0 0 8px;
+    color: var(--db-accent);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+
+  .donation-block__title {
+    margin: 0 0 8px;
+    font-family: Georgia, "Times New Roman", "Songti SC", "SimSun", serif;
+    font-size: clamp(22px, 2.4vw, 26px);
+    font-weight: 600;
+    line-height: 1.3;
+    letter-spacing: -0.01em;
+  }
+
+  .donation-block__intro {
+    margin: 0;
+    color: var(--db-muted);
+    font-size: 13px;
+    line-height: 1.7;
+    text-wrap: pretty;
+  }
+
+  .donation-widget {
+    padding: 24px;
+    background: var(--db-surface);
+    border: 1px solid var(--db-line);
+    border-radius: 14px;
+    box-shadow: var(--db-shadow);
+  }
+
+  /* 分段标签：移动端 2×2，≥560px 一行四个 */
+  .donation-tabs {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 4px;
+    padding: 4px;
+    background: var(--db-field);
+    border: 1px solid var(--db-line);
+    border-radius: 10px;
+  }
+
+  @media (min-width: 560px) {
+    .donation-tabs {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+
+  .donation-tab {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+    min-width: 0;
+    padding: 8px 10px;
+    background: transparent;
+    border: 0;
+    border-radius: 7px;
+    color: var(--db-muted);
+    font-family: inherit;
+    text-align: left;
+    cursor: pointer;
+    transition: background-color 0.16s ease, color 0.16s ease, box-shadow 0.16s ease;
+  }
+
+  .donation-tab:hover {
+    background: var(--db-hover);
+    color: var(--db-ink);
+  }
+
+  .donation-tab[aria-selected="true"] {
+    background: var(--db-surface);
+    color: var(--db-ink);
+    box-shadow: 0 1px 2px rgba(35, 33, 28, 0.1);
+  }
+
+  .donation-tab:focus-visible {
+    outline: 2px solid var(--db-accent);
+    outline-offset: 2px;
+  }
+
+  .donation-tab__symbol {
+    font-size: 12.5px;
+    font-weight: 600;
+    line-height: 1.3;
+    letter-spacing: 0.02em;
+  }
+
+  .donation-tab__network {
+    max-width: 100%;
+    overflow: hidden;
+    font-size: 9.5px;
+    line-height: 1.35;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    opacity: 0.8;
+  }
+
+  .donation-tab[aria-selected="true"] .donation-tab__network {
+    opacity: 1;
+  }
+
+  /* 面板：任何时刻只显示当前选中的一个二维码 */
+  .donation-panels {
+    margin-top: 24px;
+  }
+
+  .donation-panel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .donation-panel[hidden] {
+    display: none;
+  }
+
+  .donation-panel__qr {
+    box-sizing: content-box;
+    width: 260px;
+    max-width: 100%;
+    padding: 8px;
+    background: #ffffff;
+    border: 1px solid var(--db-line);
+    border-radius: 12px;
+  }
+
+  .donation-qr {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+  }
+
+  .donation-qr svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  .donation-qr__error {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    padding: 8px;
+    color: #6b665d;
+    font-size: 10px;
+    line-height: 1.5;
+    text-align: center;
+  }
+
+  .donation-panel__network {
+    margin: 16px 0 0;
+    color: var(--db-ink);
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1.4;
+    text-align: center;
+  }
+
+  .donation-panel__hint {
+    margin: 4px 0 0;
+    color: var(--db-muted);
+    font-size: 10.5px;
+    line-height: 1.5;
+    text-align: center;
+  }
+
+  /* 地址 + 复制：同一条控件，地址单行可横向滚动 */
+  .donation-address {
+    display: flex;
+    align-items: stretch;
+    width: 100%;
+    min-width: 0;
+    margin-top: 16px;
+    background: var(--db-field);
+    border: 1px solid var(--db-line);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .donation-address code {
+    flex: 1 1 auto;
+    min-width: 0;
+    margin: 0;
+    padding: 9px 12px;
+    background: transparent;
+    border: 0;
+    color: var(--db-ink);
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1.5;
+    letter-spacing: -0.01em;
+    white-space: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    scrollbar-color: var(--db-line-strong) transparent;
+  }
+
+  .donation-address code::-webkit-scrollbar {
+    height: 4px;
+  }
+
+  .donation-address code::-webkit-scrollbar-thumb {
+    background: var(--db-line-strong);
+    border-radius: 2px;
+  }
+
+  .donation-copy {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    margin: 0;
+    padding: 0 12px;
+    background: transparent;
+    border: 0;
+    border-left: 1px solid var(--db-line);
+    color: var(--db-muted);
+    font-family: inherit;
+    font-size: 11.5px;
+    line-height: 1;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background-color 0.16s ease, color 0.16s ease;
+  }
+
+  .donation-copy:hover {
+    background: var(--db-hover);
+    color: var(--db-ink);
+  }
+
+  .donation-copy:focus-visible {
+    outline: 2px solid var(--db-accent);
+    outline-offset: -2px;
+  }
+
+  .donation-copy__icon {
+    display: block;
+    flex: none;
+    width: 13px;
+    height: 13px;
+  }
+
+  .donation-copy__check {
+    display: none;
+  }
+
+  .donation-copy[data-state="success"] {
+    color: var(--db-success);
+  }
+
+  .donation-copy[data-state="success"] .donation-copy__copy {
+    display: none;
+  }
+
+  .donation-copy[data-state="success"] .donation-copy__check {
+    display: block;
+  }
+
+  .donation-copy[data-state="error"] {
+    color: var(--db-danger);
+  }
+
+  /* 每张面板一行的网络提示，完整警告放 title */
+  .donation-note {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    width: 100%;
+    min-height: 32px;
+    margin: 12px 0 0;
+    color: var(--db-muted);
+    font-size: 10.5px;
+    line-height: 1.55;
+  }
+
+  .donation-note svg {
+    flex: none;
+    width: 12px;
+    height: 12px;
+    margin-top: 2px;
+    opacity: 0.7;
+  }
+
+  .donation-note span {
+    min-width: 0;
+  }
+
+  .donation-copy-status {
+    width: 100%;
+    min-height: 16px;
+    margin: 8px 0 0;
+    color: var(--db-success);
+    font-size: 10.5px;
+    line-height: 1.5;
+  }
+
+  .donation-copy-status[data-tone="error"] {
+    color: var(--db-danger);
+  }
+
+  .donation-more {
+    margin-top: 32px;
+    border-top: 1px solid var(--db-line);
+  }
+
+  .donation-more summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 16px 2px 14px;
+    color: var(--db-muted);
+    font-size: 12px;
+    line-height: 1.4;
+    letter-spacing: 0.02em;
+    cursor: pointer;
+    list-style: none;
+  }
+
+  .donation-more summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .donation-more summary:hover {
+    color: var(--db-ink);
+  }
+
+  .donation-more__chevron {
+    flex: none;
+    width: 14px;
+    height: 14px;
+    transition: transform 0.18s ease;
+  }
+
+  .donation-more[open] .donation-more__chevron {
+    transform: rotate(180deg);
+  }
+
+  .donation-more__body {
+    padding: 0 2px 6px;
+    color: var(--db-muted);
+    font-size: 12px;
+    line-height: 1.7;
+    text-wrap: pretty;
+  }
+
+  .donation-more__intro {
+    margin: 0 0 8px;
+  }
+
+  .donation-more__list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .donation-more__list li {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px 18px;
+    padding: 9px 0;
+    border-top: 1px solid var(--db-line);
+  }
+
+  .donation-more__label {
+    min-width: 116px;
+    color: var(--db-muted);
+  }
+
+  .donation-more__value {
+    color: var(--db-ink);
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+    font-size: 11.5px;
+    overflow-wrap: anywhere;
+    word-break: break-all;
+  }
+
+  @media (max-width: 520px) {
+    .donation-panel__qr {
+      width: 220px;
+    }
+  }
+
+  @media (max-width: 380px) {
+    .donation-widget {
+      padding: 16px;
+    }
+
+    .donation-address code {
+      padding: 9px 10px;
+      font-size: 12px;
+    }
+
+    .donation-copy {
+      padding: 0 10px;
+      font-size: 11px;
+    }
+
+    .donation-block__title {
+      font-size: 21px;
+    }
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .donation-block {
+      --db-ink: #ece9e1;
+      --db-muted: #9d988d;
+      --db-line: #2c2d29;
+      --db-line-strong: #3d3e38;
+      --db-surface: #1a1b18;
+      --db-field: #21221e;
+      --db-hover: rgba(255, 255, 255, 0.05);
+      --db-accent: #c4ad86;
+      --db-accent-soft: #262218;
+      --db-accent-line: #5f5340;
+      --db-accent-ink: #d8c5a4;
+      --db-success: #9bc5a7;
+      --db-danger: #d0a39a;
+      --db-shadow: 0 1px 2px rgba(0, 0, 0, 0.25), 0 18px 40px -34px rgba(0, 0, 0, 0.8);
+    }
+
+    .donation-tab[aria-selected="true"] {
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+    }
+
+    .donation-address code {
+      scrollbar-color: var(--db-line-strong) transparent;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .donation-block .donation-copy,
+    .donation-block .donation-tab,
+    .donation-block .donation-more__chevron {
+      transition: none;
+    }
+  }
+</style>
+
+<section class="donation-block" aria-label="打赏与赞助">
+  <div class="donation-block__head">
+    <p class="donation-block__kicker">Support · 支持</p>
+    <h2 class="donation-block__title">如果这些内容对你有用</h2>
+    <p class="donation-block__intro">
+      可以请我喝一杯咖啡。选择对应网络，扫码或复制地址；感谢每一份心意。
+    </p>
+  </div>
+
+  <div class="donation-widget">
+    <div class="donation-tabs" role="tablist" aria-label="选择打赏网络">
+      <button class="donation-tab" type="button" role="tab" aria-selected="true" tabindex="0" data-donation-tab>
+        <span class="donation-tab__symbol">BTC</span>
+        <span class="donation-tab__network">Bitcoin 主网</span>
+      </button>
+      <button class="donation-tab" type="button" role="tab" aria-selected="false" tabindex="-1" data-donation-tab>
+        <span class="donation-tab__symbol">EVM</span>
+        <span class="donation-tab__network">ETH · BNB · Base</span>
+      </button>
+      <button class="donation-tab" type="button" role="tab" aria-selected="false" tabindex="-1" data-donation-tab>
+        <span class="donation-tab__symbol">Solana</span>
+        <span class="donation-tab__network">Solana 主网 · SPL</span>
+      </button>
+      <button class="donation-tab" type="button" role="tab" aria-selected="false" tabindex="-1" data-donation-tab>
+        <span class="donation-tab__symbol">Tron</span>
+        <span class="donation-tab__network">Tron 主网 · TRC20</span>
+      </button>
+    </div>
+
+    <div class="donation-panels">
+      <div class="donation-panel" role="tabpanel" data-donation-panel data-donation-symbol="BTC" data-donation-network="Bitcoin 主网" data-donation-validation="btc" data-donation-success="已复制 BTC 地址，请确认对方使用 Bitcoin 主网">
+        <div class="donation-panel__qr">
+          <div class="donation-qr" data-donation-qr></div>
+        </div>
+        <p class="donation-panel__network">Bitcoin 主网 · bech32（SegWit v0）</p>
+        <p class="donation-panel__hint">可长按保存或截图，在钱包中识别</p>
+
+        <div class="donation-address">
+          <code data-donation-address="bc1qgjdlyz5s78vkqvmu64wfp7c0nhrevep6jpnpge" aria-label="BTC 收款地址">bc1qgjdlyz5s78vkqvmu64wfp7c0nhrevep6jpnpge</code>
+          <button class="donation-copy" type="button" data-donation-copy aria-label="复制 BTC Bitcoin 主网地址">
+            <svg class="donation-copy__icon donation-copy__copy" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="9" y="9" width="10" height="10" rx="2"></rect>
+              <path d="M15 9V7a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"></path>
+            </svg>
+            <svg class="donation-copy__icon donation-copy__check" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="m5 12 4.5 4.5L19 7"></path>
+            </svg>
+            <span data-donation-copy-label>复制</span>
+          </button>
+        </div>
+
+        <p class="donation-note" title="仅支持 Bitcoin 主网，跨链转入的资产无法找回。">
+          <svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true">
+            <circle cx="8" cy="8" r="6.2"></circle>
+            <path d="M8 7.2v3.4M8 5.1v.1" stroke-linecap="round"></path>
+          </svg>
+          <span>仅收 BTC · 请确认使用 Bitcoin 主网</span>
+        </p>
+        <p class="donation-copy-status" data-donation-status aria-live="polite"></p>
+      </div>
+
+      <div class="donation-panel" role="tabpanel" data-donation-panel data-donation-symbol="EVM" data-donation-network="Ethereum、BNB Chain、Base" data-donation-validation="evm" data-donation-success="已复制 EVM 地址，请确认对方网络为 Ethereum、BNB Chain 或 Base" hidden>
+        <div class="donation-panel__qr">
+          <div class="donation-qr" data-donation-qr></div>
+        </div>
+        <p class="donation-panel__network">Ethereum / BNB Chain / Base 通用</p>
+        <p class="donation-panel__hint">可长按保存或截图，在钱包中识别</p>
+
+        <div class="donation-address">
+          <code data-donation-address="0x91E27149Fb64c584D3315b5dE8642e1FEfAeD164" aria-label="EVM 收款地址，以太坊、BNB Chain、Base 通用">0x91E27149Fb64c584D3315b5dE8642e1FEfAeD164</code>
+          <button class="donation-copy" type="button" data-donation-copy aria-label="复制 EVM 地址（Ethereum / BNB Chain / Base）">
+            <svg class="donation-copy__icon donation-copy__copy" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="9" y="9" width="10" height="10" rx="2"></rect>
+              <path d="M15 9V7a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"></path>
+            </svg>
+            <svg class="donation-copy__icon donation-copy__check" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="m5 12 4.5 4.5L19 7"></path>
+            </svg>
+            <span data-donation-copy-label>复制</span>
+          </button>
+        </div>
+
+        <p class="donation-note" title="同一地址在以太坊、BNB Chain、Base 均有效。收 ETH / USDT / USDC；所选网络必须与发送方一致，选错网络或币种资产无法找回。">
+          <svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true">
+            <circle cx="8" cy="8" r="6.2"></circle>
+            <path d="M8 7.2v3.4M8 5.1v.1" stroke-linecap="round"></path>
+          </svg>
+          <span>收 ETH / USDT / USDC；同一地址在以太坊、BNB Chain、Base 均有效，请确认所选网络</span>
+        </p>
+        <p class="donation-copy-status" data-donation-status aria-live="polite"></p>
+      </div>
+
+      <div class="donation-panel" role="tabpanel" data-donation-panel data-donation-symbol="Solana" data-donation-network="主网 · SPL" data-donation-validation="solana" data-donation-success="已复制 Solana 地址，请确认对方网络一致，且代币为 SPL 版本" hidden>
+        <div class="donation-panel__qr">
+          <div class="donation-qr" data-donation-qr></div>
+        </div>
+        <p class="donation-panel__network">Solana 主网 · SPL</p>
+        <p class="donation-panel__hint">可长按保存或截图，在钱包中识别</p>
+
+        <div class="donation-address">
+          <code data-donation-address="7tiKHh4TDB4fPKymvY9gXUmtDQ1HQTxm7iKnqWJGM4Hm" aria-label="Solana SPL 收款地址，可接收 USDT 与 USDC">7tiKHh4TDB4fPKymvY9gXUmtDQ1HQTxm7iKnqWJGM4Hm</code>
+          <button class="donation-copy" type="button" data-donation-copy aria-label="复制 Solana SPL 地址">
+            <svg class="donation-copy__icon donation-copy__copy" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="9" y="9" width="10" height="10" rx="2"></rect>
+              <path d="M15 9V7a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"></path>
+            </svg>
+            <svg class="donation-copy__icon donation-copy__check" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="m5 12 4.5 4.5L19 7"></path>
+            </svg>
+            <span data-donation-copy-label>复制</span>
+          </button>
+        </div>
+
+        <p class="donation-note" title="同一 Solana 地址可同时接收 USDT 与 USDC，请确认代币为 SPL 版本；选错网络或跨链转入的资产无法找回。">
+          <svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true">
+            <circle cx="8" cy="8" r="6.2"></circle>
+            <path d="M8 7.2v3.4M8 5.1v.1" stroke-linecap="round"></path>
+          </svg>
+          <span>收 USDT / USDC · 请确认代币为 SPL 版本</span>
+        </p>
+        <p class="donation-copy-status" data-donation-status aria-live="polite"></p>
+      </div>
+
+      <div class="donation-panel" role="tabpanel" data-donation-panel data-donation-symbol="Tron" data-donation-network="主网 · TRC20" data-donation-validation="tron" data-donation-success="已复制 Tron 地址，请确认对方使用 TRC20 网络" hidden>
+        <div class="donation-panel__qr">
+          <div class="donation-qr" data-donation-qr></div>
+        </div>
+        <p class="donation-panel__network">Tron 主网 · TRC20</p>
+		<p class="donation-panel__hint">可长按保存或截图，在钱包中识别</p>
+
+        <div class="donation-address">
+          <code data-donation-address="TNpaEV7yHJoiyaWcSh7qgZq3od5zUvbzEt" aria-label="Tron TRC20 收款地址">TNpaEV7yHJoiyaWcSh7qgZq3od5zUvbzEt</code>
+          <button class="donation-copy" type="button" data-donation-copy aria-label="复制 Tron TRC20 地址">
+            <svg class="donation-copy__icon donation-copy__copy" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="9" y="9" width="10" height="10" rx="2"></rect>
+              <path d="M15 9V7a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"></path>
+            </svg>
+            <svg class="donation-copy__icon donation-copy__check" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="m5 12 4.5 4.5L19 7"></path>
+            </svg>
+            <span data-donation-copy-label>复制</span>
+          </button>
+        </div>
+
+        <p class="donation-note" title="仅支持 USDT-TRC20，跨链转入的资产无法找回。">
+          <svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true">
+            <circle cx="8" cy="8" r="6.2"></circle>
+            <path d="M8 7.2v3.4M8 5.1v.1" stroke-linecap="round"></path>
+          </svg>
+          <span>仅收 USDT，网络必须为 Tron 主网 TRC20</span>
+        </p>
+        <p class="donation-copy-status" data-donation-status aria-live="polite"></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  (function () {
+    "use strict";
+
+    /* ---------- 二维码：内置生成器（QR Version 3-L，无外部依赖） ---------- */
+
+    function appendBits(bits, value, length) {
+      for (var i = length - 1; i >= 0; i--) {
+        bits.push((value >>> i) & 1);
+      }
+    }
+
+    function gfMultiply(x, y) {
+      var z = 0;
+      for (var i = 7; i >= 0; i--) {
+        z = (z << 1) ^ ((z >>> 7) * 0x11d);
+        z ^= ((y >>> i) & 1) * x;
+      }
+      return z & 0xff;
+    }
+
+    function reedSolomonDivisor(degree) {
+      var result = new Uint8Array(degree);
+      result[degree - 1] = 1;
+      var root = 1;
+      for (var i = 0; i < degree; i++) {
+        for (var j = 0; j < degree; j++) {
+          result[j] = gfMultiply(result[j], root);
+          if (j + 1 < degree) result[j] ^= result[j + 1];
+        }
+        root = gfMultiply(root, 0x02);
+      }
+      return result;
+    }
+
+    function reedSolomonRemainder(data, divisor) {
+      var result = new Uint8Array(divisor.length);
+      for (var i = 0; i < data.length; i++) {
+        var factor = data[i] ^ result[0];
+        result.copyWithin(0, 1);
+        result[result.length - 1] = 0;
+        for (var j = 0; j < divisor.length; j++) {
+          result[j] ^= gfMultiply(divisor[j], factor);
+        }
+      }
+      return result;
+    }
+
+    function getBit(value, index) {
+      return ((value >>> index) & 1) !== 0;
+    }
+
+    function createQrSvg(text) {
+      var bytes = new TextEncoder().encode(text);
+      var dataCodewordCount = 55; // Version 3-L
+      var capacityBits = dataCodewordCount * 8;
+
+      if (bytes.length > 53) {
+        throw new Error("地址超过 53 个 ASCII 字符，当前二维码版本无法容纳");
+      }
+
+      var bits = [];
+      appendBits(bits, 4, 4); // 字节模式
+      appendBits(bits, bytes.length, 8); // Version 1-9 的字符计数
+      for (var i = 0; i < bytes.length; i++) appendBits(bits, bytes[i], 8);
+
+      appendBits(bits, 0, Math.min(4, capacityBits - bits.length));
+      while (bits.length % 8 !== 0) bits.push(0);
+
+      for (var pad = 0xec; bits.length < capacityBits; pad ^= 0xfd) {
+        appendBits(bits, pad, 8);
+      }
+
+      var data = new Uint8Array(dataCodewordCount);
+      for (var b = 0; b < capacityBits; b++) {
+        data[b >>> 3] |= bits[b] << (7 - (b & 7));
+      }
+
+      var divisor = reedSolomonDivisor(15);
+      var ecc = reedSolomonRemainder(data, divisor);
+      var codewords = new Uint8Array(dataCodewordCount + ecc.length);
+      codewords.set(data);
+      codewords.set(ecc, dataCodewordCount);
+
+      var size = 29; // Version 3
+      var modules = [];
+      var isFunction = [];
+      for (var y = 0; y < size; y++) {
+        modules.push(new Array(size).fill(false));
+        isFunction.push(new Array(size).fill(false));
+      }
+
+      function setFunction(x, y, dark) {
+        if (x < 0 || y < 0 || x >= size || y >= size) return;
+        modules[y][x] = dark;
+        isFunction[y][x] = true;
+      }
+
+      function drawFinder(cx, cy) {
+        for (var dy = -4; dy <= 4; dy++) {
+          for (var dx = -4; dx <= 4; dx++) {
+            var distance = Math.max(Math.abs(dx), Math.abs(dy));
+            setFunction(cx + dx, cy + dy, distance !== 2 && distance !== 4);
+          }
+        }
+      }
+
+      function drawAlignment(cx, cy) {
+        for (var dy = -2; dy <= 2; dy++) {
+          for (var dx = -2; dx <= 2; dx++) {
+            var distance = Math.max(Math.abs(dx), Math.abs(dy));
+            setFunction(cx + dx, cy + dy, distance !== 1);
+          }
+        }
+      }
+
+      function drawFormatBits(mask) {
+        var dataBits = (1 << 3) | mask; // ECC Level L = 01
+        var remainder = dataBits;
+        for (var i = 0; i < 10; i++) {
+          remainder = (remainder << 1) ^ ((remainder >>> 9) * 0x537);
+        }
+        var format = ((dataBits << 10) | remainder) ^ 0x5412;
+
+        for (var j = 0; j <= 5; j++) setFunction(8, j, getBit(format, j));
+        setFunction(8, 7, getBit(format, 6));
+        setFunction(8, 8, getBit(format, 7));
+        setFunction(7, 8, getBit(format, 8));
+        for (var k = 9; k < 15; k++) setFunction(14 - k, 8, getBit(format, k));
+
+        for (var m = 0; m < 8; m++) setFunction(size - 1 - m, 8, getBit(format, m));
+        for (var n = 8; n < 15; n++) setFunction(8, size - 15 + n, getBit(format, n));
+        setFunction(8, size - 8, true); // 固定的深色模块
+      }
+
+      for (var t = 0; t < size; t++) {
+        setFunction(6, t, t % 2 === 0);
+        setFunction(t, 6, t % 2 === 0);
+      }
+
+      drawFinder(3, 3);
+      drawFinder(size - 4, 3);
+      drawFinder(3, size - 4);
+      drawAlignment(22, 22);
+      drawFormatBits(0);
+
+      var bitIndex = 0;
+      var totalBits = codewords.length * 8;
+      for (var right = size - 1; right >= 1; right -= 2) {
+        if (right === 6) right = 5;
+        for (var vert = 0; vert < size; vert++) {
+          for (var pair = 0; pair < 2; pair++) {
+            var x = right - pair;
+            var upward = ((right + 1) & 2) === 0;
+            var yy = upward ? size - 1 - vert : vert;
+            if (!isFunction[yy][x] && bitIndex < totalBits) {
+              modules[yy][x] = getBit(codewords[bitIndex >>> 3], 7 - (bitIndex & 7));
+              bitIndex++;
+            }
+          }
+        }
+      }
+
+      // Mask 0，与上面写入的格式位保持一致。
+      for (var my = 0; my < size; my++) {
+        for (var mx = 0; mx < size; mx++) {
+          if (!isFunction[my][mx] && (mx + my) % 2 === 0) {
+            modules[my][mx] = !modules[my][mx];
+          }
+        }
+      }
+
+      var quiet = 4;
+      var viewBox = size + quiet * 2;
+      var path = "";
+      for (var py = 0; py < size; py++) {
+        for (var px = 0; px < size; px++) {
+          if (modules[py][px]) {
+            path += "M" + (px + quiet) + " " + (py + quiet) + "h1v1h-1z";
+          }
+        }
+      }
+
+      return (
+        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ' + viewBox + " " + viewBox + '" ' +
+        'shape-rendering="crispEdges" role="presentation" focusable="false">' +
+        '<rect width="' + viewBox + '" height="' + viewBox + '" fill="#ffffff"/>' +
+        '<path d="' + path + '" fill="#171613"/>' +
+        "</svg>"
+      );
+    }
+
+    /* ---------- 复制：Clipboard API 优先，失败时本地降级 ---------- */
+
+    function legacyCopy(text) {
+      var area = document.createElement("textarea");
+      var active = document.activeElement;
+      area.value = text;
+      area.setAttribute("readonly", "");
+      area.setAttribute("aria-hidden", "true");
+      area.tabIndex = -1;
+      area.style.cssText =
+        "position:fixed;top:50%;left:50%;width:1px;height:1px;padding:0;margin:0;" +
+        "border:0;outline:0;box-shadow:none;background:transparent;opacity:0;font-size:16px;";
+
+      document.body.appendChild(area);
+      area.focus();
+      area.select();
+      area.setSelectionRange(0, text.length);
+
+      var copied = false;
+      try {
+        copied = document.execCommand("copy");
+      } catch (error) {
+        copied = false;
+      }
+
+      document.body.removeChild(area);
+      if (active && typeof active.focus === "function") active.focus();
+      return copied;
+    }
+
+    function copyText(text) {
+      if (
+        window.isSecureContext &&
+        navigator.clipboard &&
+        typeof navigator.clipboard.writeText === "function"
+      ) {
+        return navigator.clipboard.writeText(text).then(
+          function () {
+            return true;
+          },
+          function () {
+            return legacyCopy(text);
+          }
+        );
+      }
+      return Promise.resolve(legacyCopy(text));
+    }
+
+    function selectAddress(element) {
+      var range = document.createRange();
+      range.selectNodeContents(element);
+      var selection = window.getSelection();
+      if (!selection) return;
+      selection.removeAllRanges();
+      selection.addRange(range);
+    }
+
+    /* ---------- 地址校验：BTC bech32 / EVM EIP-55 / Solana base58 / Tron base58check ---------- */
+
+    var BECH32_CHARSET = "qpzry9x8gf2tvdw0s3jn54khce6mua7l";
+    var BECH32_GENERATOR = [0x3b6a57b2, 0x26508e6d, 0x1ea119fa, 0x3d4233dd, 0x2a1462b3];
+    var BASE58_PATTERN = /^[1-9A-HJ-NP-Za-km-z]{32,44}$/;
+
+    function bech32Polymod(values) {
+      var checksum = 1;
+      for (var i = 0; i < values.length; i++) {
+        var top = checksum >>> 25;
+        checksum = ((checksum & 0x1ffffff) << 5) ^ values[i];
+        for (var j = 0; j < 5; j++) {
+          if ((top >>> j) & 1) checksum ^= BECH32_GENERATOR[j];
+        }
+      }
+      return checksum >>> 0;
+    }
+
+    // bech32 校验和 + SegWit v0 结构（P2WPKH 20 字节 / P2WSH 32 字节）
+    function isValidBitcoinAddress(value) {
+      if (value.length < 14 || value.length > 90) return false;
+      if (value !== value.toLowerCase() && value !== value.toUpperCase()) return false;
+
+      var lower = value.toLowerCase();
+      var separator = lower.lastIndexOf("1");
+      if (separator < 1 || separator + 7 > lower.length) return false;
+      if (lower.slice(0, separator) !== "bc") return false;
+
+      var data = [];
+      for (var i = separator + 1; i < lower.length; i++) {
+        var index = BECH32_CHARSET.indexOf(lower.charAt(i));
+        if (index === -1) return false;
+        data.push(index);
+      }
+
+      var expanded = [];
+      for (var h = 0; h < separator; h++) expanded.push(lower.charCodeAt(h) >> 5);
+      expanded.push(0);
+      for (var k = 0; k < separator; k++) expanded.push(lower.charCodeAt(k) & 31);
+
+      var checksum = bech32Polymod(expanded.concat(data));
+      var isBech32 = checksum === 1;
+      var isBech32m = checksum === 0x2bc830a3;
+      if (!isBech32 && !isBech32m) return false;
+
+      var payload = data.slice(0, data.length - 6);
+      if (!payload.length) return false;
+      var version = payload[0];
+      if (version > 16) return false;
+      if (version === 0) {
+        return isBech32 && (payload.length === 21 || payload.length === 33);
+      }
+      return isBech32m;
+    }
+
+    /* keccak-256：EIP-55 校验和所需的哈希，纯 JS 实现，无外部依赖 */
+
+    var KECCAK_RC = [
+      "0000000000000001", "0000000000008082", "800000000000808a", "8000000080008000",
+      "000000000000808b", "0000000080000001", "8000000080008081", "8000000000008009",
+      "000000000000008a", "0000000000000088", "0000000080008009", "000000008000000a",
+      "000000008000808b", "800000000000008b", "8000000000008089", "8000000000008003",
+      "8000000000008002", "8000000000000080", "000000000000800a", "800000008000000a",
+      "8000000080008081", "8000000000008080", "0000000080000001", "8000000080008008"
+    ];
+    var KECCAK_ROTATION = [
+      [0, 36, 3, 41, 18],
+      [1, 44, 10, 45, 2],
+      [62, 6, 43, 15, 61],
+      [28, 55, 25, 21, 56],
+      [27, 20, 39, 8, 14]
+    ];
+
+    function rotateLeft64(value, bits, mask) {
+      if (!bits) return value;
+      var shift = BigInt(bits);
+      return ((value << shift) | (value >> (BigInt(64) - shift))) & mask;
+    }
+
+    function keccakF1600(lanes) {
+      var mask = (BigInt(1) << BigInt(64)) - BigInt(1);
+      for (var round = 0; round < 24; round++) {
+        var columns = [];
+        for (var x = 0; x < 5; x++) {
+          columns[x] =
+            lanes[x] ^ lanes[x + 5] ^ lanes[x + 10] ^ lanes[x + 15] ^ lanes[x + 20];
+        }
+        for (var cx = 0; cx < 5; cx++) {
+          var delta = columns[(cx + 4) % 5] ^ rotateLeft64(columns[(cx + 1) % 5], 1, mask);
+          for (var cy = 0; cy < 5; cy++) lanes[cx + 5 * cy] ^= delta;
+        }
+
+        var permuted = new Array(25);
+        for (var px = 0; px < 5; px++) {
+          for (var py = 0; py < 5; py++) {
+            permuted[py + 5 * ((2 * px + 3 * py) % 5)] = rotateLeft64(
+              lanes[px + 5 * py],
+              KECCAK_ROTATION[px][py],
+              mask
+            );
+          }
+        }
+
+        for (var tx = 0; tx < 5; tx++) {
+          for (var ty = 0; ty < 5; ty++) {
+            var blocked = permuted[((tx + 1) % 5) + 5 * ty];
+            lanes[tx + 5 * ty] =
+              permuted[tx + 5 * ty] ^ (~blocked & mask & permuted[((tx + 2) % 5) + 5 * ty]);
+          }
+        }
+
+        lanes[0] ^= BigInt("0x" + KECCAK_RC[round]);
+      }
+    }
+
+    function keccak256Hex(text) {
+      var rate = 136; // 1088 bit
+      var bytes = new TextEncoder().encode(text);
+      var total = Math.ceil((bytes.length + 1) / rate) * rate;
+      var padded = new Uint8Array(total);
+      padded.set(bytes);
+      padded[bytes.length] ^= 0x01;
+      padded[total - 1] ^= 0x80;
+
+      var lanes = new Array(25);
+      for (var i = 0; i < 25; i++) lanes[i] = BigInt(0);
+
+      for (var offset = 0; offset < total; offset += rate) {
+        for (var lane = 0; lane < rate / 8; lane++) {
+          var value = BigInt(0);
+          for (var byteIndex = 7; byteIndex >= 0; byteIndex--) {
+            value = (value << BigInt(8)) | BigInt(padded[offset + lane * 8 + byteIndex]);
+          }
+          lanes[lane] ^= value;
+        }
+        keccakF1600(lanes);
+      }
+
+      var hex = "";
+      for (var out = 0; out < 4; out++) {
+        for (var position = 0; position < 8; position++) {
+          var byte = Number((lanes[out] >> BigInt(8 * position)) & BigInt(0xff));
+          hex += (byte < 16 ? "0" : "") + byte.toString(16);
+        }
+      }
+      return hex;
+    }
+
+    // EIP-55：全小写 / 全大写视为未加校验和；混合大小写逐字符比对 keccak 哈希
+    function isValidEvmAddress(value) {
+      if (!/^0x[0-9a-fA-F]{40}$/.test(value)) return false;
+
+      var body = value.slice(2);
+      if (body === body.toLowerCase() || body === body.toUpperCase()) return true;
+      if (typeof BigInt !== "function") return true; // 旧环境仅做格式校验
+
+      try {
+        var hash = keccak256Hex(body.toLowerCase());
+        for (var i = 0; i < body.length; i++) {
+          var expected =
+            parseInt(hash.charAt(i), 16) >= 8
+              ? body.charAt(i).toUpperCase()
+              : body.charAt(i).toLowerCase();
+          if (body.charAt(i) !== expected) return false;
+        }
+        return true;
+      } catch (error) {
+        return false;
+      }
+    }
+
+    // Solana：32–44 位 base58，不含 0 O I l
+    function isValidSolanaAddress(value) {
+      return BASE58_PATTERN.test(value);
+    }
+
+    /* Tron：base58check —— 解码 25 字节，首字节 0x41，末尾 4 字节为双 SHA-256 校验和 */
+
+    var BASE58_ALPHABET = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
+
+    function base58Decode(value) {
+      if (typeof BigInt !== "function") return null;
+      var number = BigInt(0);
+      for (var i = 0; i < value.length; i++) {
+        var index = BASE58_ALPHABET.indexOf(value.charAt(i));
+        if (index === -1) return null;
+        number = number * BigInt(58) + BigInt(index);
+      }
+      var hex = number.toString(16);
+      if (hex.length % 2) hex = "0" + hex;
+      var bytes = [];
+      for (var h = 0; h < hex.length; h += 2) bytes.push(parseInt(hex.substring(h, h + 2), 16));
+      for (var lead = 0; lead < value.length && value.charAt(lead) === "1"; lead++) {
+        bytes.unshift(0);
+      }
+      return bytes;
+    }
+
+    /* SHA-256：同步实现，仅供 Tron 双哈希校验和使用，无外部依赖 */
+
+    var SHA256_K = [
+      0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5,
+      0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3, 0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174,
+      0xe49b69c1, 0xefbe4786, 0x0fc19dc6, 0x240ca1cc, 0x2de92c6f, 0x4a7484aa, 0x5cb0a9dc, 0x76f988da,
+      0x983e5152, 0xa831c66d, 0xb00327c8, 0xbf597fc7, 0xc6e00bf3, 0xd5a79147, 0x06ca6351, 0x14292967,
+      0x27b70a85, 0x2e1b2138, 0x4d2c6dfc, 0x53380d13, 0x650a7354, 0x766a0abb, 0x81c2c92e, 0x92722c85,
+      0xa2bfe8a1, 0xa81a664b, 0xc24b8b70, 0xc76c51a3, 0xd192e819, 0xd6990624, 0xf40e3585, 0x106aa070,
+      0x19a4c116, 0x1e376c08, 0x2748774c, 0x34b0bcb5, 0x391c0cb3, 0x4ed8aa4a, 0x5b9cca4f, 0x682e6ff3,
+      0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208, 0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2
+    ];
+
+    function rotateRight32(value, bits) {
+      return (value >>> bits) | (value << (32 - bits));
+    }
+
+    function sha256Bytes(bytes) {
+      var hash = [
+        0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a,
+        0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19
+      ];
+      var length = bytes.length;
+      var bitLength = length * 8;
+      var total = ((length + 9 + 63) >> 6) << 6;
+      var padded = new Uint8Array(total);
+      padded.set(bytes);
+      padded[length] = 0x80;
+      padded[total - 4] = (bitLength >>> 24) & 0xff;
+      padded[total - 3] = (bitLength >>> 16) & 0xff;
+      padded[total - 2] = (bitLength >>> 8) & 0xff;
+      padded[total - 1] = bitLength & 0xff;
+
+      var words = new Uint32Array(64);
+      for (var offset = 0; offset < total; offset += 64) {
+        for (var i = 0; i < 16; i++) {
+          words[i] =
+            (padded[offset + i * 4] << 24) |
+            (padded[offset + i * 4 + 1] << 16) |
+            (padded[offset + i * 4 + 2] << 8) |
+            padded[offset + i * 4 + 3];
+        }
+        for (var w = 16; w < 64; w++) {
+          var s0 = rotateRight32(words[w - 15], 7) ^ rotateRight32(words[w - 15], 18) ^ (words[w - 15] >>> 3);
+          var s1 = rotateRight32(words[w - 2], 17) ^ rotateRight32(words[w - 2], 19) ^ (words[w - 2] >>> 10);
+          words[w] = (words[w - 16] + s0 + words[w - 7] + s1) >>> 0;
+        }
+
+        var a = hash[0], b = hash[1], c = hash[2], d = hash[3];
+        var e = hash[4], f = hash[5], g = hash[6], h = hash[7];
+        for (var round = 0; round < 64; round++) {
+          var sum1 = rotateRight32(e, 6) ^ rotateRight32(e, 11) ^ rotateRight32(e, 25);
+          var choice = (e & f) ^ (~e & g);
+          var temp1 = (h + sum1 + choice + SHA256_K[round] + words[round]) >>> 0;
+          var sum0 = rotateRight32(a, 2) ^ rotateRight32(a, 13) ^ rotateRight32(a, 22);
+          var majority = (a & b) ^ (a & c) ^ (b & c);
+          var temp2 = (sum0 + majority) >>> 0;
+          h = g; g = f; f = e; e = (d + temp1) >>> 0;
+          d = c; c = b; b = a; a = (temp1 + temp2) >>> 0;
+        }
+        hash[0] = (hash[0] + a) >>> 0; hash[1] = (hash[1] + b) >>> 0;
+        hash[2] = (hash[2] + c) >>> 0; hash[3] = (hash[3] + d) >>> 0;
+        hash[4] = (hash[4] + e) >>> 0; hash[5] = (hash[5] + f) >>> 0;
+        hash[6] = (hash[6] + g) >>> 0; hash[7] = (hash[7] + h) >>> 0;
+      }
+
+      var digest = [];
+      for (var out = 0; out < 8; out++) {
+        digest.push(
+          (hash[out] >>> 24) & 0xff,
+          (hash[out] >>> 16) & 0xff,
+          (hash[out] >>> 8) & 0xff,
+          hash[out] & 0xff
+        );
+      }
+      return digest;
+    }
+
+    // base58check：25 字节 = 1 字节版本(0x41) + 20 字节地址 + 4 字节双 SHA-256 校验和
+    function isValidTronAddress(value) {
+      if (!/^T[1-9A-HJ-NP-Za-km-z]{33}$/.test(value)) return false;
+      var bytes = base58Decode(value);
+      if (!bytes || bytes.length !== 25 || bytes[0] !== 0x41) return false;
+
+      var digest = sha256Bytes(sha256Bytes(bytes.slice(0, 21)));
+      for (var i = 0; i < 4; i++) {
+        if (digest[i] !== bytes[21 + i]) return false;
+      }
+      return true;
+    }
+
+    function addressErrorFor(validation, address) {
+      if (validation === "btc" && !isValidBitcoinAddress(address)) {
+        return "BTC 地址未通过 bech32 校验，请检查地址配置。";
+      }
+      if (validation === "evm" && !isValidEvmAddress(address)) {
+        return "EVM 地址未通过 EIP-55 校验，请检查地址配置。";
+      }
+      if (validation === "solana" && !isValidSolanaAddress(address)) {
+        return "Solana 地址需为 32–44 位 base58 字符，请检查地址配置。";
+      }
+      if (validation === "tron" && !isValidTronAddress(address)) {
+        return "Tron 地址未通过 base58check 校验，请检查地址配置。";
+      }
+      return "";
+    }
+
+    /* ---------- 初始化：分段标签 + 单码面板 ---------- */
+
+    var donationBlockIndex = 0;
+
+    document.querySelectorAll(".donation-block").forEach(function (block) {
+      if (block.getAttribute("data-donation-ready") === "true") return;
+      block.setAttribute("data-donation-ready", "true");
+
+      var blockIndex = donationBlockIndex++;
+      var tabs = Array.prototype.slice.call(block.querySelectorAll("[data-donation-tab]"));
+      var panels = Array.prototype.slice.call(block.querySelectorAll("[data-donation-panel]"));
+      var qrCache = {};
+
+      tabs.forEach(function (tab, index) {
+        var panel = panels[index];
+        if (!panel) return;
+        tab.id = "donation-tab-" + blockIndex + "-" + index;
+        panel.id = "donation-panel-" + blockIndex + "-" + index;
+        tab.setAttribute("aria-controls", panel.id);
+        panel.setAttribute("aria-labelledby", tab.id);
+      });
+
+      // 只为当前面板生成二维码，其余面板清空；生成结果缓存，来回切换不重复计算
+      function renderQr(index) {
+        var panel = panels[index];
+        if (!panel) return;
+        var qr = panel.querySelector("[data-donation-qr]");
+        if (!qr) return;
+
+        panels.forEach(function (other, otherIndex) {
+          if (otherIndex === index) return;
+          var otherQr = other.querySelector("[data-donation-qr]");
+          if (otherQr && otherQr.firstChild) otherQr.innerHTML = "";
+        });
+
+        if (!qrCache[index]) {
+          var addressElement = panel.querySelector("[data-donation-address]");
+          var address = (
+            (addressElement &&
+              (addressElement.getAttribute("data-donation-address") || addressElement.textContent)) ||
+            ""
+          ).trim();
+          if (!address) return;
+          try {
+            qrCache[index] = { markup: createQrSvg(address), failed: false };
+          } catch (error) {
+            qrCache[index] = {
+              markup: '<span class="donation-qr__error">二维码生成失败，请复制地址</span>',
+              failed: true
+            };
+          }
+        }
+
+        var cached = qrCache[index];
+        qr.innerHTML = cached.markup;
+        if (cached.failed) {
+          qr.removeAttribute("role");
+          qr.setAttribute("aria-label", "二维码生成失败，请复制地址");
+          return;
+        }
+        var symbol = panel.getAttribute("data-donation-symbol") || "";
+        var network = panel.getAttribute("data-donation-network") || "";
+        qr.setAttribute("role", "img");
+        qr.setAttribute(
+          "aria-label",
+          (symbol + " " + network + " 收款地址二维码").replace(/\s+/g, " ").trim()
+        );
+      }
+
+      function activate(index, focusTab) {
+        tabs.forEach(function (tab, tabIndex) {
+          var selected = tabIndex === index;
+          tab.setAttribute("aria-selected", selected ? "true" : "false");
+          tab.tabIndex = selected ? 0 : -1;
+          if (panels[tabIndex]) {
+            if (selected) panels[tabIndex].removeAttribute("hidden");
+            else panels[tabIndex].setAttribute("hidden", "");
+          }
+        });
+        renderQr(index);
+        if (focusTab && tabs[index]) tabs[index].focus();
+      }
+
+      tabs.forEach(function (tab, index) {
+        tab.addEventListener("click", function () {
+          activate(index, false);
+        });
+
+        tab.addEventListener("keydown", function (event) {
+          var next = -1;
+          if (event.key === "ArrowRight" || event.key === "ArrowDown") {
+            next = (index + 1) % tabs.length;
+          } else if (event.key === "ArrowLeft" || event.key === "ArrowUp") {
+            next = (index - 1 + tabs.length) % tabs.length;
+          } else if (event.key === "Home") {
+            next = 0;
+          } else if (event.key === "End") {
+            next = tabs.length - 1;
+          }
+          if (next < 0) return;
+          event.preventDefault();
+          activate(next, true);
+        });
+      });
+
+      var initialIndex = 0;
+      tabs.forEach(function (tab, index) {
+        if (tab.getAttribute("aria-selected") === "true") initialIndex = index;
+      });
+      activate(initialIndex, false);
+
+      panels.forEach(function (panel) {
+        var addressElement = panel.querySelector("[data-donation-address]");
+        if (!addressElement) return;
+
+        var address = (
+          addressElement.getAttribute("data-donation-address") ||
+          addressElement.textContent ||
+          ""
+        ).trim();
+        if (!address) return;
+
+        addressElement.textContent = address;
+
+        var validation = panel.getAttribute("data-donation-validation") || "";
+        var button = panel.querySelector("[data-donation-copy]");
+        var label = panel.querySelector("[data-donation-copy-label]");
+        var status = panel.querySelector("[data-donation-status]");
+        if (!button || !label || !status) return;
+
+        var timer = 0;
+        button.addEventListener("click", function () {
+          window.clearTimeout(timer);
+
+          var errorMessage = addressErrorFor(validation, address);
+          if (errorMessage) {
+            button.setAttribute("data-state", "error");
+            label.textContent = "格式有误";
+            status.setAttribute("data-tone", "error");
+            status.textContent = errorMessage;
+            timer = window.setTimeout(function () {
+              button.removeAttribute("data-state");
+              label.textContent = "复制";
+              status.removeAttribute("data-tone");
+              status.textContent = "";
+            }, 4200);
+            return;
+          }
+
+          copyText(address).then(function (copied) {
+            if (copied) {
+              button.setAttribute("data-state", "success");
+              label.textContent = "已复制";
+              status.removeAttribute("data-tone");
+              status.textContent =
+                panel.getAttribute("data-donation-success") || "地址已复制到剪贴板";
+            } else {
+              button.setAttribute("data-state", "error");
+              label.textContent = "手动复制";
+              status.setAttribute("data-tone", "error");
+              status.textContent = "自动复制失败，地址已选中，请手动复制";
+              selectAddress(addressElement);
+            }
+
+            timer = window.setTimeout(
+              function () {
+                button.removeAttribute("data-state");
+                label.textContent = "复制";
+                status.removeAttribute("data-tone");
+                status.textContent = "";
+              },
+              copied ? 2200 : 4200
+            );
+          });
+        });
+      });
+    });
+  })();
+</script>
+
+</body>
+</html>
