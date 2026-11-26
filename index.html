@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>打赏与赞助</title>
-<meta name="description" content="如果这些内容对你有用，可以请我喝一杯咖啡。支持 BTC / EVM / Solana / Tron 打赏。" />
+<title>打赏与赞助 · Donate &amp; Support</title>
+<meta name="description" content="如果这些内容对你有用，可以请我喝一杯咖啡。支持 BTC / EVM / Solana / Tron 打赏。If these notes have been useful, you can buy me a coffee. BTC / EVM / Solana / Tron donations are welcome." />
 <style>
   html,body{margin:0;padding:0}
   body{min-height:100vh;background:#f7f6f2;padding:48px 16px;box-sizing:border-box}
@@ -73,6 +73,26 @@
     font-size: 13px;
     line-height: 1.7;
     text-wrap: pretty;
+  }
+
+  /* 双语：英文说明作为第二行，与中文保持同一层级 */
+  .donation-en {
+    display: block;
+    margin-top: 2px;
+    font-size: 0.94em;
+    font-weight: 400;
+    letter-spacing: 0;
+    opacity: 0.86;
+  }
+
+  .donation-block__title .donation-en {
+    margin-top: 4px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+      "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    font-size: 0.58em;
+    font-weight: 500;
+    letter-spacing: 0;
+    opacity: 0.72;
   }
 
   .donation-widget {
@@ -497,20 +517,21 @@
   }
 </style>
 
-<section class="donation-block" aria-label="打赏与赞助">
+<section class="donation-block" aria-label="打赏与赞助 / Donate &amp; Support">
   <div class="donation-block__head">
     <p class="donation-block__kicker">Support · 支持</p>
-    <h2 class="donation-block__title">如果这些内容对你有用</h2>
+    <h2 class="donation-block__title">如果这些内容对你有用<span class="donation-en">If these notes have been useful</span></h2>
     <p class="donation-block__intro">
       可以请我喝一杯咖啡。选择对应网络，扫码或复制地址；感谢每一份心意。
+      <span class="donation-en">Buy me a coffee — pick the matching network, then scan or copy the address. Thank you for your support.</span>
     </p>
   </div>
 
   <div class="donation-widget">
-    <div class="donation-tabs" role="tablist" aria-label="选择打赏网络">
+    <div class="donation-tabs" role="tablist" aria-label="选择打赏网络 / Select a network">
       <button class="donation-tab" type="button" role="tab" aria-selected="true" tabindex="0" data-donation-tab>
         <span class="donation-tab__symbol">BTC</span>
-        <span class="donation-tab__network">Bitcoin 主网</span>
+        <span class="donation-tab__network">Bitcoin 主网 / Mainnet</span>
       </button>
       <button class="donation-tab" type="button" role="tab" aria-selected="false" tabindex="-1" data-donation-tab>
         <span class="donation-tab__symbol">EVM</span>
@@ -518,25 +539,25 @@
       </button>
       <button class="donation-tab" type="button" role="tab" aria-selected="false" tabindex="-1" data-donation-tab>
         <span class="donation-tab__symbol">Solana</span>
-        <span class="donation-tab__network">Solana 主网 · SPL</span>
+        <span class="donation-tab__network">Solana 主网 / Mainnet</span>
       </button>
       <button class="donation-tab" type="button" role="tab" aria-selected="false" tabindex="-1" data-donation-tab>
         <span class="donation-tab__symbol">Tron</span>
-        <span class="donation-tab__network">Tron 主网 · TRC20</span>
+        <span class="donation-tab__network">Tron 主网 / Mainnet</span>
       </button>
     </div>
 
     <div class="donation-panels">
-      <div class="donation-panel" role="tabpanel" data-donation-panel data-donation-symbol="BTC" data-donation-network="Bitcoin 主网" data-donation-validation="btc" data-donation-success="已复制 BTC 地址，请确认对方使用 Bitcoin 主网">
+      <div class="donation-panel" role="tabpanel" data-donation-panel data-donation-symbol="BTC" data-donation-network="Bitcoin 主网 / Mainnet" data-donation-validation="btc" data-donation-success="已复制 BTC 地址，请确认对方使用 Bitcoin 主网 / BTC address copied — make sure the sender uses Bitcoin mainnet">
         <div class="donation-panel__qr">
           <div class="donation-qr" data-donation-qr></div>
         </div>
-        <p class="donation-panel__network">Bitcoin 主网 · bech32（SegWit v0）</p>
-        <p class="donation-panel__hint">可长按保存或截图，在钱包中识别</p>
+        <p class="donation-panel__network">Bitcoin 主网 / Mainnet · bech32（SegWit v0）</p>
+        <p class="donation-panel__hint">可长按保存或截图，在钱包中识别<span class="donation-en">Long-press to save or take a screenshot, then scan it in your wallet.</span></p>
 
         <div class="donation-address">
-          <code data-donation-address="bc1qgjdlyz5s78vkqvmu64wfp7c0nhrevep6jpnpge" aria-label="BTC 收款地址">bc1qgjdlyz5s78vkqvmu64wfp7c0nhrevep6jpnpge</code>
-          <button class="donation-copy" type="button" data-donation-copy aria-label="复制 BTC Bitcoin 主网地址">
+          <code data-donation-address="bc1qgjdlyz5s78vkqvmu64wfp7c0nhrevep6jpnpge" aria-label="BTC 收款地址 / BTC donation address">bc1qgjdlyz5s78vkqvmu64wfp7c0nhrevep6jpnpge</code>
+          <button class="donation-copy" type="button" data-donation-copy aria-label="复制 BTC Bitcoin 主网地址 / Copy BTC mainnet address">
             <svg class="donation-copy__icon donation-copy__copy" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <rect x="9" y="9" width="10" height="10" rx="2"></rect>
               <path d="M15 9V7a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"></path>
@@ -544,30 +565,30 @@
             <svg class="donation-copy__icon donation-copy__check" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <path d="m5 12 4.5 4.5L19 7"></path>
             </svg>
-            <span data-donation-copy-label>复制</span>
+            <span data-donation-copy-label>复制 / Copy</span>
           </button>
         </div>
 
-        <p class="donation-note" title="仅支持 Bitcoin 主网，跨链转入的资产无法找回。">
+        <p class="donation-note" title="仅支持 Bitcoin 主网，跨链转入的资产无法找回。 / Bitcoin mainnet only — assets sent from other networks cannot be recovered.">
           <svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true">
             <circle cx="8" cy="8" r="6.2"></circle>
             <path d="M8 7.2v3.4M8 5.1v.1" stroke-linecap="round"></path>
           </svg>
-          <span>仅收 BTC · 请确认使用 Bitcoin 主网</span>
+          <span>仅收 BTC · 请确认使用 Bitcoin 主网<span class="donation-en">BTC only — please use the Bitcoin mainnet.</span></span>
         </p>
         <p class="donation-copy-status" data-donation-status aria-live="polite"></p>
       </div>
 
-      <div class="donation-panel" role="tabpanel" data-donation-panel data-donation-symbol="EVM" data-donation-network="Ethereum、BNB Chain、Base" data-donation-validation="evm" data-donation-success="已复制 EVM 地址，请确认对方网络为 Ethereum、BNB Chain 或 Base" hidden>
+      <div class="donation-panel" role="tabpanel" data-donation-panel data-donation-symbol="EVM" data-donation-network="Ethereum、BNB Chain、Base" data-donation-validation="evm" data-donation-success="已复制 EVM 地址，请确认对方网络为 Ethereum、BNB Chain 或 Base / EVM address copied — make sure the sender uses Ethereum, BNB Chain or Base" hidden>
         <div class="donation-panel__qr">
           <div class="donation-qr" data-donation-qr></div>
         </div>
-        <p class="donation-panel__network">Ethereum / BNB Chain / Base 通用</p>
-        <p class="donation-panel__hint">可长按保存或截图，在钱包中识别</p>
+        <p class="donation-panel__network">Ethereum / BNB Chain / Base 通用<span class="donation-en">Same address on all three networks</span></p>
+        <p class="donation-panel__hint">可长按保存或截图，在钱包中识别<span class="donation-en">Long-press to save or take a screenshot, then scan it in your wallet.</span></p>
 
         <div class="donation-address">
-          <code data-donation-address="0x91E27149Fb64c584D3315b5dE8642e1FEfAeD164" aria-label="EVM 收款地址，以太坊、BNB Chain、Base 通用">0x91E27149Fb64c584D3315b5dE8642e1FEfAeD164</code>
-          <button class="donation-copy" type="button" data-donation-copy aria-label="复制 EVM 地址（Ethereum / BNB Chain / Base）">
+          <code data-donation-address="0x91E27149Fb64c584D3315b5dE8642e1FEfAeD164" aria-label="EVM 收款地址，以太坊、BNB Chain、Base 通用 / EVM donation address, valid on Ethereum, BNB Chain and Base">0x91E27149Fb64c584D3315b5dE8642e1FEfAeD164</code>
+          <button class="donation-copy" type="button" data-donation-copy aria-label="复制 EVM 地址（Ethereum / BNB Chain / Base） / Copy EVM address">
             <svg class="donation-copy__icon donation-copy__copy" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <rect x="9" y="9" width="10" height="10" rx="2"></rect>
               <path d="M15 9V7a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"></path>
@@ -575,30 +596,30 @@
             <svg class="donation-copy__icon donation-copy__check" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <path d="m5 12 4.5 4.5L19 7"></path>
             </svg>
-            <span data-donation-copy-label>复制</span>
+            <span data-donation-copy-label>复制 / Copy</span>
           </button>
         </div>
 
-        <p class="donation-note" title="同一地址在以太坊、BNB Chain、Base 均有效。收 ETH / USDT / USDC；所选网络必须与发送方一致，选错网络或币种资产无法找回。">
+        <p class="donation-note" title="同一地址在以太坊、BNB Chain、Base 均有效。收 ETH / USDT / USDC；所选网络必须与发送方一致，选错网络或币种资产无法找回。 / The same address works on Ethereum, BNB Chain and Base. Accepts ETH / USDT / USDC; the selected network must match the sender's, or the funds cannot be recovered.">
           <svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true">
             <circle cx="8" cy="8" r="6.2"></circle>
             <path d="M8 7.2v3.4M8 5.1v.1" stroke-linecap="round"></path>
           </svg>
-          <span>收 ETH / USDT / USDC；同一地址在以太坊、BNB Chain、Base 均有效，请确认所选网络</span>
+          <span>收 ETH / USDT / USDC；同一地址在以太坊、BNB Chain、Base 均有效，请确认所选网络<span class="donation-en">Accepts ETH, USDT and USDC. The same address works on Ethereum, BNB Chain and Base — make sure the selected network matches.</span></span>
         </p>
         <p class="donation-copy-status" data-donation-status aria-live="polite"></p>
       </div>
 
-      <div class="donation-panel" role="tabpanel" data-donation-panel data-donation-symbol="Solana" data-donation-network="主网 · SPL" data-donation-validation="solana" data-donation-success="已复制 Solana 地址，请确认对方网络一致，且代币为 SPL 版本" hidden>
+      <div class="donation-panel" role="tabpanel" data-donation-panel data-donation-symbol="Solana" data-donation-network="主网 · SPL" data-donation-validation="solana" data-donation-success="已复制 Solana 地址，请确认对方网络一致，且代币为 SPL 版本 / Solana address copied — make sure the sender uses the same network and SPL tokens" hidden>
         <div class="donation-panel__qr">
           <div class="donation-qr" data-donation-qr></div>
         </div>
-        <p class="donation-panel__network">Solana 主网 · SPL</p>
-        <p class="donation-panel__hint">可长按保存或截图，在钱包中识别</p>
+        <p class="donation-panel__network">Solana 主网 / Mainnet · SPL</p>
+        <p class="donation-panel__hint">可长按保存或截图，在钱包中识别<span class="donation-en">Long-press to save or take a screenshot, then scan it in your wallet.</span></p>
 
         <div class="donation-address">
-          <code data-donation-address="7tiKHh4TDB4fPKymvY9gXUmtDQ1HQTxm7iKnqWJGM4Hm" aria-label="Solana SPL 收款地址，可接收 USDT 与 USDC">7tiKHh4TDB4fPKymvY9gXUmtDQ1HQTxm7iKnqWJGM4Hm</code>
-          <button class="donation-copy" type="button" data-donation-copy aria-label="复制 Solana SPL 地址">
+          <code data-donation-address="7tiKHh4TDB4fPKymvY9gXUmtDQ1HQTxm7iKnqWJGM4Hm" aria-label="Solana SPL 收款地址，可接收 USDT 与 USDC / Solana SPL donation address for USDT and USDC">7tiKHh4TDB4fPKymvY9gXUmtDQ1HQTxm7iKnqWJGM4Hm</code>
+          <button class="donation-copy" type="button" data-donation-copy aria-label="复制 Solana SPL 地址 / Copy Solana SPL address">
             <svg class="donation-copy__icon donation-copy__copy" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <rect x="9" y="9" width="10" height="10" rx="2"></rect>
               <path d="M15 9V7a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"></path>
@@ -606,30 +627,30 @@
             <svg class="donation-copy__icon donation-copy__check" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <path d="m5 12 4.5 4.5L19 7"></path>
             </svg>
-            <span data-donation-copy-label>复制</span>
+            <span data-donation-copy-label>复制 / Copy</span>
           </button>
         </div>
 
-        <p class="donation-note" title="同一 Solana 地址可同时接收 USDT 与 USDC，请确认代币为 SPL 版本；选错网络或跨链转入的资产无法找回。">
+        <p class="donation-note" title="同一 Solana 地址可同时接收 USDT 与 USDC，请确认代币为 SPL 版本；选错网络或跨链转入的资产无法找回。 / The same Solana address can receive both USDT and USDC. Make sure the tokens are SPL; assets sent on the wrong network cannot be recovered.">
           <svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true">
             <circle cx="8" cy="8" r="6.2"></circle>
             <path d="M8 7.2v3.4M8 5.1v.1" stroke-linecap="round"></path>
           </svg>
-          <span>收 USDT / USDC · 请确认代币为 SPL 版本</span>
+          <span>收 USDT / USDC · 请确认代币为 SPL 版本<span class="donation-en">USDT and USDC only — make sure they are SPL tokens.</span></span>
         </p>
         <p class="donation-copy-status" data-donation-status aria-live="polite"></p>
       </div>
 
-      <div class="donation-panel" role="tabpanel" data-donation-panel data-donation-symbol="Tron" data-donation-network="主网 · TRC20" data-donation-validation="tron" data-donation-success="已复制 Tron 地址，请确认对方使用 TRC20 网络" hidden>
+      <div class="donation-panel" role="tabpanel" data-donation-panel data-donation-symbol="Tron" data-donation-network="主网 · TRC20" data-donation-validation="tron" data-donation-success="已复制 Tron 地址，请确认对方使用 TRC20 网络 / Tron address copied — make sure the sender uses the TRC20 network" hidden>
         <div class="donation-panel__qr">
           <div class="donation-qr" data-donation-qr></div>
         </div>
-        <p class="donation-panel__network">Tron 主网 · TRC20</p>
-		<p class="donation-panel__hint">可长按保存或截图，在钱包中识别</p>
+        <p class="donation-panel__network">Tron 主网 / Mainnet · TRC20</p>
+        <p class="donation-panel__hint">可长按保存或截图，在钱包中识别<span class="donation-en">Long-press to save or take a screenshot, then scan it in your wallet.</span></p>
 
         <div class="donation-address">
-          <code data-donation-address="TNpaEV7yHJoiyaWcSh7qgZq3od5zUvbzEt" aria-label="Tron TRC20 收款地址">TNpaEV7yHJoiyaWcSh7qgZq3od5zUvbzEt</code>
-          <button class="donation-copy" type="button" data-donation-copy aria-label="复制 Tron TRC20 地址">
+          <code data-donation-address="TNpaEV7yHJoiyaWcSh7qgZq3od5zUvbzEt" aria-label="Tron TRC20 收款地址 / Tron TRC20 donation address">TNpaEV7yHJoiyaWcSh7qgZq3od5zUvbzEt</code>
+          <button class="donation-copy" type="button" data-donation-copy aria-label="复制 Tron TRC20 地址 / Copy Tron TRC20 address">
             <svg class="donation-copy__icon donation-copy__copy" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <rect x="9" y="9" width="10" height="10" rx="2"></rect>
               <path d="M15 9V7a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"></path>
@@ -637,16 +658,16 @@
             <svg class="donation-copy__icon donation-copy__check" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <path d="m5 12 4.5 4.5L19 7"></path>
             </svg>
-            <span data-donation-copy-label>复制</span>
+            <span data-donation-copy-label>复制 / Copy</span>
           </button>
         </div>
 
-        <p class="donation-note" title="仅支持 USDT-TRC20，跨链转入的资产无法找回。">
+        <p class="donation-note" title="仅支持 USDT-TRC20，跨链转入的资产无法找回。 / USDT-TRC20 only — assets sent from other networks cannot be recovered.">
           <svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true">
             <circle cx="8" cy="8" r="6.2"></circle>
             <path d="M8 7.2v3.4M8 5.1v.1" stroke-linecap="round"></path>
           </svg>
-          <span>仅收 USDT，网络必须为 Tron 主网 TRC20</span>
+          <span>仅收 USDT，网络必须为 Tron 主网 TRC20<span class="donation-en">USDT only — the network must be Tron mainnet (TRC20).</span></span>
         </p>
         <p class="donation-copy-status" data-donation-status aria-live="polite"></p>
       </div>
@@ -712,7 +733,7 @@
       var capacityBits = dataCodewordCount * 8;
 
       if (bytes.length > 53) {
-        throw new Error("地址超过 53 个 ASCII 字符，当前二维码版本无法容纳");
+        throw new Error("地址超过 53 个 ASCII 字符，当前二维码版本无法容纳 / Address exceeds 53 ASCII characters, which the current QR version cannot hold");
       }
 
       var bits = [];
@@ -1194,16 +1215,16 @@
 
     function addressErrorFor(validation, address) {
       if (validation === "btc" && !isValidBitcoinAddress(address)) {
-        return "BTC 地址未通过 bech32 校验，请检查地址配置。";
+        return "BTC 地址未通过 bech32 校验，请检查地址配置。 / BTC address failed the bech32 checksum — please check the configured address.";
       }
       if (validation === "evm" && !isValidEvmAddress(address)) {
-        return "EVM 地址未通过 EIP-55 校验，请检查地址配置。";
+        return "EVM 地址未通过 EIP-55 校验，请检查地址配置。 / EVM address failed the EIP-55 checksum — please check the configured address.";
       }
       if (validation === "solana" && !isValidSolanaAddress(address)) {
-        return "Solana 地址需为 32–44 位 base58 字符，请检查地址配置。";
+        return "Solana 地址需为 32–44 位 base58 字符，请检查地址配置。 / Solana address must be 32–44 base58 characters — please check the configured address.";
       }
       if (validation === "tron" && !isValidTronAddress(address)) {
-        return "Tron 地址未通过 base58check 校验，请检查地址配置。";
+        return "Tron 地址未通过 base58check 校验，请检查地址配置。 / Tron address failed the base58check checksum — please check the configured address.";
       }
       return "";
     }
@@ -1255,7 +1276,7 @@
             qrCache[index] = { markup: createQrSvg(address), failed: false };
           } catch (error) {
             qrCache[index] = {
-              markup: '<span class="donation-qr__error">二维码生成失败，请复制地址</span>',
+              markup: '<span class="donation-qr__error">二维码生成失败，请复制地址<br>QR code failed to render — please copy the address instead</span>',
               failed: true
             };
           }
@@ -1265,7 +1286,7 @@
         qr.innerHTML = cached.markup;
         if (cached.failed) {
           qr.removeAttribute("role");
-          qr.setAttribute("aria-label", "二维码生成失败，请复制地址");
+          qr.setAttribute("aria-label", "二维码生成失败，请复制地址 / QR code failed to render — please copy the address instead");
           return;
         }
         var symbol = panel.getAttribute("data-donation-symbol") || "";
@@ -1273,7 +1294,7 @@
         qr.setAttribute("role", "img");
         qr.setAttribute(
           "aria-label",
-          (symbol + " " + network + " 收款地址二维码").replace(/\s+/g, " ").trim()
+          (symbol + " " + network + " 收款地址二维码 / Donation address QR code").replace(/\s+/g, " ").trim()
         );
       }
 
@@ -1345,12 +1366,12 @@
           var errorMessage = addressErrorFor(validation, address);
           if (errorMessage) {
             button.setAttribute("data-state", "error");
-            label.textContent = "格式有误";
+            label.textContent = "格式有误 / Invalid";
             status.setAttribute("data-tone", "error");
             status.textContent = errorMessage;
             timer = window.setTimeout(function () {
               button.removeAttribute("data-state");
-              label.textContent = "复制";
+              label.textContent = "复制 / Copy";
               status.removeAttribute("data-tone");
               status.textContent = "";
             }, 4200);
@@ -1360,22 +1381,24 @@
           copyText(address).then(function (copied) {
             if (copied) {
               button.setAttribute("data-state", "success");
-              label.textContent = "已复制";
+              label.textContent = "已复制 / Copied";
               status.removeAttribute("data-tone");
               status.textContent =
-                panel.getAttribute("data-donation-success") || "地址已复制到剪贴板";
+                panel.getAttribute("data-donation-success") ||
+                "地址已复制到剪贴板 / Address copied to clipboard";
             } else {
               button.setAttribute("data-state", "error");
-              label.textContent = "手动复制";
+              label.textContent = "手动复制 / Manual";
               status.setAttribute("data-tone", "error");
-              status.textContent = "自动复制失败，地址已选中，请手动复制";
+              status.textContent =
+                "自动复制失败，地址已选中，请手动复制 / Auto-copy failed — the address is selected, please copy it manually";
               selectAddress(addressElement);
             }
 
             timer = window.setTimeout(
               function () {
                 button.removeAttribute("data-state");
-                label.textContent = "复制";
+                label.textContent = "复制 / Copy";
                 status.removeAttribute("data-tone");
                 status.textContent = "";
               },
